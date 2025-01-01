@@ -1,13 +1,5 @@
-# Borgbackup-docker
-This project provides a Docker-based solution to host remote Borg repositories for multiple users.
-
-## Container build
-To build the Docker container, follow these steps:
-```sh
-git clone https://github.com/daniel-pozza/borgbackup-docker.git
-cd borgbackup-docker
-docker build . -t borgbackup:latest
-```
+# Borgservice
+This project provides a Docker-based solution to host a Borg repository backend for multiple users.
 
 ## Users configuration
 The Docker container expects one or more `/config/*.borgusers` files to define users and their Borg permissions. These files allow the container to configure users during the startup process.
@@ -38,7 +30,7 @@ Start the container by mounting the file:
 docker run \
     -p 2222:22 \
     -v ./example.borgusers:/config/example.borgusers:ro \
-    borgbackup:latest
+    danielpozza/borgservice:latest
 ```
 This configuration enables access to the following Borg repository:
 ```
@@ -66,11 +58,11 @@ chown 1001:1001 ./repos/user
 Then, make it accessible through a mount
 ```sh
 docker run \
-    --name borgbackup \
+    --name borgservice \
     -v ./example.borgusers:/config/example.borgusers:ro \
     -v ./repos:/repos \
     -p 2222:22 \
-    borgbackup:latest
+    danielpozza/borgservice:latest
 ```
 
 ## Run the container
@@ -78,9 +70,9 @@ docker run \
 Here’s an example `compose.yml` configuration:
 ```sh
 services:
-  borgserver:
-    image: borgserver:latest
-    container_name: borgbackup
+  borgbackup:
+    image: danielpozza/borgservice:latest
+    container_name: borgservice
     volumes:
       - ./config.borgusers:/config/config.borgusers:ro
       - ./host_keys:/host_keys:ro
@@ -93,10 +85,10 @@ services:
 Alternatively, run the container directly:
 ```sh
 docker run \
-    --name borgbackup \
+    --name borgservice \
     -v ./example.borgusers:/config/example.borgusers:ro \
     -v ./host_keys:/host_keys:ro \
     -v  /persistent:/repositories \
     -p 2222:22 \
-    borgbackup:latest
+    danielpozza/borgservice:latest
 ```
