@@ -35,6 +35,12 @@ handle_file() {
     done < "$1"
 }
 
+# Exit if at least one user is already present
+# Needed for container restart
+if [ -n "$(ls -A /home)" ]; then
+    exit 0
+fi
+
 for file in /config/*.borgusers; do
     if [ -f "$file" ]; then
         echo "Handling users file $file"
